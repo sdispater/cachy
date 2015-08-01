@@ -1,0 +1,129 @@
+# -*- coding: utf-8 -*-
+
+import os
+import tempfile
+import hashlib
+from unittest import TestCase
+from flexmock import flexmock, flexmock_teardown
+
+from cachy.stores import FileStore
+from cachy.utils import PY2, encode
+
+if PY2:
+    import __builtin__ as builtins
+else:
+    import builtins
+
+
+class DictStoreTestCase(TestCase):
+
+    def tearDown(self):
+        flexmock_teardown()
+
+    def test_none_is_returned_if_file_doesnt_exist(self):
+        mock = flexmock(os.path)
+        mock.should_receive('exists').once().and_return(False)
+
+        store = FileStore(tempfile.gettempdir())
+
+        self.assertIsNone(store.get('foo'))
+
+    def test_put_creates_missing_directories(self):
+        store = flexmock(FileStore(tempfile.gettempdir()))
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+        store.should_receive('_create_cache_directory').once().with_args(full_path)
+        mock = flexmock(builtins)
+        handler = flexmock()
+        mock.should_receive('open').once().with_args(full_path, 'wb').and_return(handler)
+        handler.should_receive('write').once()
+
+        store.put('foo', '0000000000', 0)
+
+    def test_expired_items_return_none(self):
+        store = flexmock(FileStore(tempfile.gettempdir()))
+        contents = {
+            'time': 0,
+            'data': 'bar'
+        }
+
+        flexmock(os.path).should_receive('exists').once().and_return(True)
+
+        mock = flexmock(builtins)
+        handler = flexmock()
+
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+
+        mock.should_receive('open').once().with_args(full_path, 'rb').and_return(handler)
+        handler.should_receive('read').once().and_return(contents)
+
+        store.should_receive('_unserialize').once().and_return(contents)
+        store.should_receive('forget').once().with_args('foo')
+
+        store.get('foo')
+
+    def test_store_items_properly_store_values(self):
+        store = flexmock(FileStore(tempfile.gettempdir()))
+
+        contents = store._serialize({
+            'time': 1111111111,
+            'data': 'bar'
+        })
+
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+
+        store.should_receive('_expiration').with_args(10).and_return(1111111111)
+
+        mock = flexmock(builtins)
+        handler = flexmock()
+        mock.should_receive('open').once().with_args(full_path, 'wb').and_return(handler)
+        handler.should_receive('write').once().with_args(contents)
+
+        store.put('foo', 'bar', 10)
+
+    def test_forever_store_values_with_high_timestamp(self):
+        store = flexmock(FileStore(tempfile.gettempdir()))
+
+        contents = store._serialize({
+            'time': 9999999999,
+            'data': 'bar'
+        })
+
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+
+        mock = flexmock(builtins)
+        handler = flexmock()
+        mock.should_receive('open').once().with_args(full_path, 'wb').and_return(handler)
+        handler.should_receive('write').once().with_args(contents)
+
+        store.forever('foo', 'bar')
+
+    def test_forget_with_missing_file(self):
+        store = FileStore(tempfile.gettempdir())
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+
+        mock = flexmock(os.path)
+        mock.should_receive('exists').once().with_args(full_path).and_return(False)
+
+        self.assertFalse(store.forget('foo'))
+
+    def test_forget_removes_file(self):
+        store = FileStore(tempfile.gettempdir())
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_path = os.path.join(full_dir, md5)
+
+        mock = flexmock(os.path)
+        mock.should_receive('exists').once().with_args(full_path).and_return(True)
+        flexmock(os).should_receive('remove').once().with_args(full_path)
+
+        self.assertTrue(store.forget('foo'))
