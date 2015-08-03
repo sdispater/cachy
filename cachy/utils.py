@@ -37,7 +37,7 @@ def decode(string, encodings=None):
 
 
 def encode(string, encodings=None):
-    if not PY2 and isinstance(string, bytes):
+    if isinstance(string, bytes) or PY2 and isinstance(string, unicode):
         return string
 
     if encodings is None:

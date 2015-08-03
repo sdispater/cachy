@@ -13,8 +13,6 @@ class FileStore(Store):
     A cache store using the filesystem as its backend.
     """
 
-    driver = 'file'
-
     def __init__(self, directory):
         """
         :param directory: The cache directory
@@ -53,8 +51,7 @@ class FileStore(Store):
         with open(path, 'rb') as fh:
             contents = fh.read()
 
-        data = self._unserialize(contents)
-        expire = data['time']
+        expire = int(contents[:10])
 
         # If the current time is greater than expiration timestamps we will delete
         # the file and return null. This helps clean up the old files and keeps
@@ -64,12 +61,14 @@ class FileStore(Store):
 
             return {'data': None, 'time': None}
 
+        data = self.unserialize(contents[10:])
+
         # Next, we'll extract the number of minutes that are remaining for a cache
         # so that we can properly retain the time for things like the increment
         # operation that may be performed on the cache. We'll round this out.
         time_ = math.ceil((expire - round(time.time())) / 60.)
 
-        return {'data': data['data'], 'time': time_}
+        return {'data': data, 'time': time_}
 
     def put(self, key, value, minutes):
         """
@@ -84,7 +83,7 @@ class FileStore(Store):
         :param minutes: The lifetime in minutes of the cached value
         :type minutes: int
         """
-        value = self._serialize({'time': self._expiration(minutes), 'data': value})
+        value = encode(str(self._expiration(minutes))) + encode(self.serialize(value))
 
         path = self._path(key)
         self._create_cache_directory(path)

@@ -43,10 +43,7 @@ class DictStoreTestCase(TestCase):
 
     def test_expired_items_return_none(self):
         store = flexmock(FileStore(tempfile.gettempdir()))
-        contents = {
-            'time': 0,
-            'data': 'bar'
-        }
+        contents = b'0000000000' + store.serialize('bar')
 
         flexmock(os.path).should_receive('exists').once().and_return(True)
 
@@ -60,7 +57,6 @@ class DictStoreTestCase(TestCase):
         mock.should_receive('open').once().with_args(full_path, 'rb').and_return(handler)
         handler.should_receive('read').once().and_return(contents)
 
-        store.should_receive('_unserialize').once().and_return(contents)
         store.should_receive('forget').once().with_args('foo')
 
         store.get('foo')
@@ -68,10 +64,7 @@ class DictStoreTestCase(TestCase):
     def test_store_items_properly_store_values(self):
         store = flexmock(FileStore(tempfile.gettempdir()))
 
-        contents = store._serialize({
-            'time': 1111111111,
-            'data': 'bar'
-        })
+        contents = b'1111111111' + store.serialize('bar')
 
         md5 = hashlib.md5(encode('foo')).hexdigest()
         full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
@@ -89,10 +82,7 @@ class DictStoreTestCase(TestCase):
     def test_forever_store_values_with_high_timestamp(self):
         store = flexmock(FileStore(tempfile.gettempdir()))
 
-        contents = store._serialize({
-            'time': 9999999999,
-            'data': 'bar'
-        })
+        contents = b'9999999999' + store.serialize('bar')
 
         md5 = hashlib.md5(encode('foo')).hexdigest()
         full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
