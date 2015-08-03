@@ -10,8 +10,6 @@ class DictStore(Store):
     A cache store using a dictionary as its backend.
     """
 
-    driver = 'dict'
-
     def __init__(self):
         self._storage = {}
 
