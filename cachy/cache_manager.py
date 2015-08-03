@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import threading
 from .contracts.factory import Factory
 from .contracts.store import Store
 
@@ -9,17 +10,32 @@ from .stores import (
 )
 
 from .repository import Repository
+from .serializers import (
+    Serializer,
+    JsonSerializer,
+    MsgPackSerializer,
+    PickleSerializer
+)
 
 
-class CacheManager(Factory):
+class CacheManager(Factory, threading.local):
     """
     A CacheManager is a pool of cache stores
     """
 
-    def __init__(self, config):
+    _serializers = {
+        'json': JsonSerializer(),
+        'msgpack': MsgPackSerializer(),
+        'pickle': PickleSerializer()
+    }
+
+    def __init__(self, config, serializer='pickle'):
+        super(CacheManager, self).__init__()
+
         self._config = config
         self._stores = {}
         self._custom_creators = {}
+        self._serializer = self._resolve_serializer(serializer)
 
     def store(self, name=None):
         """
@@ -36,6 +52,17 @@ class CacheManager(Factory):
         self._stores[name] = self._get(name)
 
         return self._stores[name]
+
+    def driver(self, name=None):
+        """
+        Get a cache store instance by name.
+
+        :param name: The cache store name
+        :type name: str
+
+        :rtype: mixed
+        """
+        return self.store(name)
 
     def _get(self, name):
         """
@@ -63,9 +90,18 @@ class CacheManager(Factory):
             raise RuntimeError('Cache store [%s] is not defined.')
 
         if config['driver'] in self._custom_creators:
-            return self._call_custom_creator(config)
+            repository = self._call_custom_creator(config)
+        else:
+            repository = getattr(self, '_create_%s_driver' % config['driver'])(config)
 
-        return getattr(self, '_create_%s_driver' % config['driver'])(config)
+        if 'serializer' in config:
+            serializer = self._resolve_serializer(config['serializer'])
+        else:
+            serializer = self._serializer
+
+        repository.get_store().set_serializer(serializer)
+
+        return repository
 
     def _call_custom_creator(self, config):
         """
@@ -180,6 +216,35 @@ class CacheManager(Factory):
         self._custom_creators[driver] = store
 
         return self
+
+    def _resolve_serializer(self, serializer):
+        """
+        Resolve the given serializer.
+
+        :param serializer: The serializer to resolve
+        :type serializer: str or Serializer
+
+        :rtype: Serializer
+        """
+        if isinstance(serializer, Serializer):
+            return serializer
+
+        if serializer in self._serializers:
+            return self._serializers[serializer]
+
+        raise RuntimeError('Unsupported serializer')
+
+    def register_serializer(self, name, serializer):
+        """
+        Register a new serializer.
+
+        :param name: The name of the serializer
+        :type name: str
+
+        :param serializer: The serializer
+        :type serializer: Serializer
+        """
+        self._serializers[name] = serializer
 
     def __getattr__(self, item):
         try:
