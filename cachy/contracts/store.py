@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from functools import partial
-
-try:
-    import cPickle as pickle
-except ImportError:  # noqa
-    import pickle
-
-# Serialize pickle dumps using the highest pickle protocol (binary, default
-# uses ascii)
-dumps = partial(pickle.dumps, protocol=pickle.HIGHEST_PROTOCOL)
-loads = pickle.loads
+from ..serializers import PickleSerializer
 
 
 class Store(object):
@@ -19,6 +9,8 @@ class Store(object):
     """
 
     driver = None
+
+    _serializer = PickleSerializer()
 
     def get(self, key):
         """
@@ -111,8 +103,19 @@ class Store(object):
         """
         raise NotImplementedError()
 
-    def _unserialize(self, data):
-        return loads(data)
+    def set_serializer(self, serializer):
+        """
+        Set the serializer.
 
-    def _serialize(self, data):
-        return dumps(data)
+        :param serializer: The serializer
+        :type serializer: cachy.serializers.Serializer
+
+        :rtype: Store
+        """
+        self._serializer = serializer
+
+    def unserialize(self, data):
+        return self._serializer.unserialize(data)
+
+    def serialize(self, data):
+        return self._serializer.serialize(data)
