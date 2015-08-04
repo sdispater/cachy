@@ -114,6 +114,8 @@ class Store(object):
         """
         self._serializer = serializer
 
+        return self
+
     def unserialize(self, data):
         return self._serializer.unserialize(data)
 
