@@ -20,7 +20,7 @@ from .serializers import (
 
 class CacheManager(Factory, threading.local):
     """
-    A CacheManager is a pool of cache stores
+    A CacheManager is a pool of cache stores.
     """
 
     _serializers = {
@@ -29,13 +29,13 @@ class CacheManager(Factory, threading.local):
         'pickle': PickleSerializer()
     }
 
-    def __init__(self, config, serializer='pickle'):
+    def __init__(self, config):
         super(CacheManager, self).__init__()
 
         self._config = config
         self._stores = {}
         self._custom_creators = {}
-        self._serializer = self._resolve_serializer(serializer)
+        self._serializer = self._resolve_serializer(config.get('serializer', 'pickle'))
 
     def store(self, name=None):
         """
@@ -44,7 +44,7 @@ class CacheManager(Factory, threading.local):
         :param name: The cache store name
         :type name: str
 
-        :rtype: mixed
+        :rtype: Repository
         """
         if name is None:
             name = self.get_default_driver()
@@ -60,7 +60,7 @@ class CacheManager(Factory, threading.local):
         :param name: The cache store name
         :type name: str
 
-        :rtype: mixed
+        :rtype: Repository
         """
         return self.store(name)
 
@@ -71,7 +71,7 @@ class CacheManager(Factory, threading.local):
         :param name: The store name
         :type name: str
 
-        :rtype: mixed
+        :rtype: Repository
         """
         return self._stores.get(name, self._resolve(name))
 
@@ -82,7 +82,7 @@ class CacheManager(Factory, threading.local):
         :param name: The store to resolve
         :type name: str
 
-        :rtype: mixed
+        :rtype: Repository
         """
         config = self._get_config(name)
 
@@ -110,12 +110,15 @@ class CacheManager(Factory, threading.local):
         :param config: The driver configuration
         :type config: dict
 
-        :rtype: mixed
+        :rtype: Repository
         """
         creator = self._custom_creators[config['driver']](config)
 
         if isinstance(creator, Store):
-            return self.repository(creator)
+            creator = self.repository(creator)
+
+        if not isinstance(creator, Repository):
+            raise RuntimeError('Custom creator should return a Repository instance.')
 
         return creator
 
@@ -251,3 +254,6 @@ class CacheManager(Factory, threading.local):
             return object.__getattribute__(self, item)
         except AttributeError:
             return getattr(self.store(), item)
+
+    def __call__(self, *args, **kwargs):
+        return self.store()(*args, **kwargs)
