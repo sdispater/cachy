@@ -1,22 +1,23 @@
-.. Cachy documentation master file, created by
-   sphinx-quickstart on Fri Jul 31 19:27:30 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Cachy
+=====
 
-Welcome to Cachy's documentation!
-=================================
-
-Contents:
+Cachy provides a simple yet effective caching library.
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
+* A simple but powerful API
+* Thread-safety
+* Decorator syntax
+* Support for **memcached**, **redis**, **database**, **file**, **dict** stores
 
+Cachy supports python versions **2.7+** and **3.2+**
 
-Indices and tables
-==================
+.. toctree::
+    :hidden:
+    :maxdepth: 2
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+    installation
+    configuration
+    usage
+    custom_cache_drivers
