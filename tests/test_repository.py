@@ -116,10 +116,11 @@ class RepositoryTestCase(TestCase):
         self.assertEqual(1, len(calls))
 
     def test_repository_can_serve_as_a_decorator_with_key_and_minutes(self):
-        repo = self._get_repository()
+        repo = flexmock(self._get_repository())
+        repo.should_receive('_get_key').with_args('my_key', (2,), {'m': 4}).and_return('foo')
         repo.get_store().should_receive('get').and_return(None, 6, 6).one_by_one()
         repo.get_store().should_receive('put').once()\
-            .with_args('my_key:152aa07719dfdf7fa9ddcf5b0267a35bf5b04a0f', 6, 35)
+            .with_args('foo', 6, 35)
         calls = []
 
         @repo(key='my_key', minutes=35)
@@ -128,9 +129,9 @@ class RepositoryTestCase(TestCase):
 
             return i*3
 
-        test(2)
-        test(2)
-        test(2)
+        test(2, m=4)
+        test(2, m=4)
+        test(2, m=4)
 
         self.assertEqual(1, len(calls))
 

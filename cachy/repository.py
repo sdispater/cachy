@@ -7,7 +7,7 @@ import hashlib
 from functools import wraps
 from .contracts.repository import Repository as CacheContract
 from .helpers import value
-from .utils import encode
+from .utils import encode, decode
 
 
 class Repository(CacheContract):
@@ -277,10 +277,10 @@ class Repository(CacheContract):
         if args:
             serialized_arguments = (
                 self._store.serialize(args[1:])
-                + self._store.serialize(kwargs)
+                + self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
             )
         else:
-            serialized_arguments = self._store.serialize(kwargs)
+            serialized_arguments = self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
 
         if isinstance(fn, types.MethodType):
             key = self._hash('%s.%s.%s'
