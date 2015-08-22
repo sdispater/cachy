@@ -6,7 +6,8 @@ from .contracts.store import Store
 
 from .stores import (
     DictStore,
-    FileStore
+    FileStore,
+    RedisStore
 )
 
 from .repository import Repository
@@ -87,7 +88,7 @@ class CacheManager(Factory, threading.local):
         config = self._get_config(name)
 
         if not config:
-            raise RuntimeError('Cache store [%s] is not defined.')
+            raise RuntimeError('Cache store [%s] is not defined.' % name)
 
         if config['driver'] in self._custom_creators:
             repository = self._call_custom_creator(config)
@@ -143,6 +144,17 @@ class CacheManager(Factory, threading.local):
         :rtype: Repository
         """
         return self.repository(FileStore(config['path']))
+
+    def _create_redis_driver(self, config):
+        """
+        Create an instance of the redis cache driver.
+
+        :param config: The driver configuration
+        :type config: dict
+
+        :return: Repository
+        """
+        return self.repository(RedisStore(**config))
 
     def repository(self, store):
         """
