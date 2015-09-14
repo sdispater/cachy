@@ -104,6 +104,64 @@ class RepositoryTestCase(TestCase):
 
         self.assertEqual('dict', manager.get_default_driver())
 
+    def test_decorator(self):
+        manager = flexmock(CacheManager({
+            'stores': {
+                'dict': {
+                    'driver': 'dict'
+                }
+            }
+        }))
+
+        store = flexmock(Repository(flexmock(CustomStore())))
+        manager.should_receive('store').once().with_args(None).and_return(store)
+        store.get_store().should_receive('get').and_return(None, 6, 6).one_by_one()
+        store.get_store().should_receive('put').once()
+
+        calls = []
+
+        @manager
+        def test(i, m=3):
+            calls.append(i)
+
+            return i*3
+
+        test(2)
+        test(2)
+        test(2)
+
+        self.assertEqual(1, len(calls))
+
+    def test_full_decorator(self):
+        manager = flexmock(CacheManager({
+            'stores': {
+                'dict': {
+                    'driver': 'dict'
+                }
+            }
+        }))
+
+        store = flexmock(Repository(flexmock(CustomStore())))
+        store.should_receive('_get_key').with_args('my_key', (2,), {'m': 4}).and_return('foo')
+        manager.should_receive('store').once().with_args('dict').and_return(store)
+        store.get_store().should_receive('get').and_return(None, 6, 6).one_by_one()
+        store.get_store().should_receive('put').once()\
+            .with_args('foo', 6, 35)
+
+        calls = []
+
+        @manager('dict', key='my_key', minutes=35)
+        def test(i, m=3):
+            calls.append(i)
+
+            return i*3
+
+        test(2, m=4)
+        test(2, m=4)
+        test(2, m=4)
+
+        self.assertEqual(1, len(calls))
+
 
 class CustomStore(Store):
 

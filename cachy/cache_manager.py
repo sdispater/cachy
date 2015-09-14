@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import types
+from functools import wraps
 from .contracts.factory import Factory
 from .contracts.store import Store
 
@@ -267,5 +269,18 @@ class CacheManager(Factory, threading.local):
         except AttributeError:
             return getattr(self.store(), item)
 
-    def __call__(self, *args, **kwargs):
-        return self.store()(*args, **kwargs)
+    def __call__(self, store=None, *args, **kwargs):
+        if isinstance(store, (types.FunctionType, types.MethodType)):
+            fn = store
+
+            if len(args) > 0:
+                store = args[0]
+                args = args[1:] if len(args) > 1 else []
+            else:
+                store = None
+
+            args = (fn,) + args
+
+            return self.store(store)(*args, **kwargs)
+        else:
+            return self.store(store)(*args, **kwargs)

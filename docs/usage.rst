@@ -189,7 +189,15 @@ You can also specify a key and the number of minutes the result will be stored i
     def get_users():
         return db.table('users').get()
 
-.. note::
+.. warning::
 
     The ``key`` keyword will only serve as a prefix for the automatically generated key.
     The final cache key will still depend on the arguments and keyword arguments.
+
+You can also specify a store when using the cache manager as a decorator:
+
+.. code-block:: python
+
+    @cache('redis', key='key', minutes=30)
+    def get_users():
+        return db.table('users').get()
