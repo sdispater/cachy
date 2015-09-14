@@ -19,6 +19,14 @@ def get_version():
 
 __version__ = get_version()
 
+# Recommended extra packages
+recommended = {
+    'redis': ['redis'],
+    'memcached': ['python-memcached'],
+    'memcachedc': ['pylibmc'],
+    'memcachedpy3': ['python3-memcached']
+}
+
 setup(
     name='cachy',
     license='MIT',
@@ -33,6 +41,7 @@ setup(
     install_requires=[],
     tests_require=['pytest', 'mock', 'flexmock'],
     test_suite='nose.collector',
+    extras_require=recommended,
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
