@@ -9,7 +9,8 @@ from .contracts.store import Store
 from .stores import (
     DictStore,
     FileStore,
-    RedisStore
+    RedisStore,
+    MemcachedStore
 )
 
 from .repository import Repository
@@ -157,6 +158,17 @@ class CacheManager(Factory, threading.local):
         :return: Repository
         """
         return self.repository(RedisStore(**config))
+
+    def _create_memcached_driver(self, config):
+        """
+        Create an instance of the redis cache driver.
+
+        :param config: The driver configuration
+        :type config: dict
+
+        :return: Repository
+        """
+        return self.repository(MemcachedStore(**config))
 
     def repository(self, store):
         """

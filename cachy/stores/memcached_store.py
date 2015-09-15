@@ -3,7 +3,10 @@
 try:
     from pylibmc import memcache
 except ImportError:
-    import memcache
+    try:
+        import memcache
+    except ImportError:
+        memcache = None
 
 from ..contracts.store import Store
 
