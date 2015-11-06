@@ -164,3 +164,8 @@ The possible values are ``pickle``, ``json``, ``msgpack``.
             }
         }
     }
+
+.. warning::
+
+    The serializer you choose will determine which types of objects you can serialize,
+    the ``pickle`` serializer being the more permissive.
