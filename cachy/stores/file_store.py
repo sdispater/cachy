@@ -203,7 +203,7 @@ class FileStore(Store):
         if minutes == 0:
             return 9999999999
 
-        return round(time.time()) + (minutes * 60)
+        return int(round(time.time()) + (minutes * 60))
 
     def get_prefix(self):
         """

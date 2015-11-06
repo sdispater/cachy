@@ -5,11 +5,12 @@ try:
 except ImportError:
     StrictRedis = None
 
-from ..contracts.store import Store
-from ..utils import basestring
+from ..contracts.taggable_store import TaggableStore
+from ..redis_tagged_cache import RedisTaggedCache
+from ..tag_set import TagSet
 
 
-class RedisStore(Store):
+class RedisStore(TaggableStore):
     """
     A cache store using the Redis as its backend.
     """
@@ -121,4 +122,18 @@ class RedisStore(Store):
 
         :rtype: str
         """
-        raise self._prefix
+        return self._prefix
+
+    def connection(self):
+        return self._redis
+
+    def tags(self, *names):
+        """
+        Begin executing a new tags operation.
+
+        :param names: The tags
+        :type names: tuple
+
+        :rtype: cachy.tagged_cache.TaggedCache
+        """
+        return RedisTaggedCache(self, TagSet(self, names))

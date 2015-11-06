@@ -2,10 +2,10 @@
 
 import time
 import math
-from ..contracts.store import Store
+from ..contracts.taggable_store import TaggableStore
 
 
-class DictStore(Store):
+class DictStore(TaggableStore):
     """
     A cache store using a dictionary as its backend.
     """

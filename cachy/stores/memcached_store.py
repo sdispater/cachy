@@ -8,10 +8,10 @@ except ImportError:
     except ImportError:
         memcache = None
 
-from ..contracts.store import Store
+from ..contracts.taggable_store import TaggableStore
 
 
-class MemcachedStore(Store):
+class MemcachedStore(TaggableStore):
 
     def __init__(self, servers, prefix='', **kwargs):
         # Removing potential "driver" key

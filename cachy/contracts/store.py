@@ -73,8 +73,8 @@ class Store(object):
         :param key: The cache key
         :type key: str
 
-        :param value: The increment value
-        :type value: int
+        :param value: The value
+        :type value: mixed
         """
         raise NotImplementedError()
 

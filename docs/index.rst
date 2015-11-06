@@ -21,3 +21,4 @@ Cachy supports python versions **2.7+** and **3.2+**
     configuration
     usage
     custom_cache_drivers
+    cache_tags
