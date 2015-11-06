@@ -18,8 +18,8 @@ nosetests.xml
 .DS_Store
 .idea/*
 
-test.py
-test_*.py
+/test.py
+/test_*.py
 config.py
 
 Makefile
