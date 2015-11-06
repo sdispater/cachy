@@ -64,8 +64,7 @@ class RedisTaggedCache(TaggedCache):
 
         :type forever_key: str
         """
-        forever = list(set(self._store.connection().lrange(forever_key, 0, -1)))
-        print(forever)
+        forever = self._store.connection().lrange(forever_key, 0, -1)
 
         if len(forever) > 0:
             self._store.connection().delete(*forever)
