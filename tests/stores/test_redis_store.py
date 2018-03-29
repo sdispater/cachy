@@ -69,7 +69,7 @@ class RedisStoreTestCase(TestCase):
         store.forever('foo', 'bar')
 
         self.assertEqual(store.serialize('bar'), self.redis.get('prefix:foo'))
-        self.assertIsNone(self.redis.ttl('prefix:foo'))
+        assert self.redis.ttl('prefix:foo') == -1
 
     def test_forget(self):
         store = self.get_store()

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import glob
 import os
 import tempfile
 import hashlib
+import shutil
+
 from unittest import TestCase
 from flexmock import flexmock, flexmock_teardown
 
+from cachy.serializers import JsonSerializer
 from cachy.stores import FileStore
 from cachy.utils import PY2, encode
 
@@ -17,7 +21,14 @@ else:
 
 class DictStoreTestCase(TestCase):
 
+    def setUp(self):
+        self._dir = os.path.join(tempfile.gettempdir(), 'cachy')
+
     def tearDown(self):
+        for e in glob.glob(os.path.join(self._dir, '*')):
+            if os.path.isdir(e):
+                shutil.rmtree(e)
+
         flexmock_teardown()
 
     def test_none_is_returned_if_file_doesnt_exist(self):
@@ -29,9 +40,9 @@ class DictStoreTestCase(TestCase):
         self.assertIsNone(store.get('foo'))
 
     def test_put_creates_missing_directories(self):
-        store = flexmock(FileStore(tempfile.gettempdir()))
+        store = flexmock(FileStore(self._dir))
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
         store.should_receive('_create_cache_directory').once().with_args(full_path)
         mock = flexmock(builtins)
@@ -42,7 +53,7 @@ class DictStoreTestCase(TestCase):
         store.put('foo', '0000000000', 0)
 
     def test_expired_items_return_none(self):
-        store = flexmock(FileStore(tempfile.gettempdir()))
+        store = flexmock(FileStore(self._dir))
         contents = b'0000000000' + store.serialize('bar')
 
         flexmock(os.path).should_receive('exists').once().and_return(True)
@@ -51,7 +62,7 @@ class DictStoreTestCase(TestCase):
         handler = flexmock()
 
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
 
         mock.should_receive('open').once().with_args(full_path, 'rb').and_return(handler)
@@ -62,12 +73,12 @@ class DictStoreTestCase(TestCase):
         store.get('foo')
 
     def test_store_items_properly_store_values(self):
-        store = flexmock(FileStore(tempfile.gettempdir()))
+        store = flexmock(FileStore(self._dir))
 
         contents = b'1111111111' + store.serialize('bar')
 
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
 
         store.should_receive('_expiration').with_args(10).and_return(1111111111)
@@ -80,12 +91,12 @@ class DictStoreTestCase(TestCase):
         store.put('foo', 'bar', 10)
 
     def test_forever_store_values_with_high_timestamp(self):
-        store = flexmock(FileStore(tempfile.gettempdir()))
+        store = flexmock(FileStore(self._dir))
 
         contents = b'9999999999' + store.serialize('bar')
 
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
 
         mock = flexmock(builtins)
@@ -96,9 +107,9 @@ class DictStoreTestCase(TestCase):
         store.forever('foo', 'bar')
 
     def test_forget_with_missing_file(self):
-        store = FileStore(tempfile.gettempdir())
+        store = FileStore(self._dir)
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
 
         mock = flexmock(os.path)
@@ -107,9 +118,9 @@ class DictStoreTestCase(TestCase):
         self.assertFalse(store.forget('foo'))
 
     def test_forget_removes_file(self):
-        store = FileStore(tempfile.gettempdir())
+        store = FileStore(self._dir)
         md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(tempfile.gettempdir(), md5[0:2], md5[2:4])
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
         full_path = os.path.join(full_dir, md5)
 
         mock = flexmock(os.path)
@@ -117,3 +128,12 @@ class DictStoreTestCase(TestCase):
         flexmock(os).should_receive('remove').once().with_args(full_path)
 
         self.assertTrue(store.forget('foo'))
+
+    def test_get_with_json_serializer(self):
+        store = FileStore(self._dir)
+        store.set_serializer(JsonSerializer())
+        store.forever('foo', {'foo': 'bar'})
+
+        result = store.get('foo')
+        assert result == {'foo': 'bar'}
+

@@ -5,6 +5,8 @@ try:
 except ImportError:
     import json
 
+from cachy.utils import decode
+
 from .serializer import Serializer
 
 
@@ -33,4 +35,4 @@ class JsonSerializer(Serializer):
 
         :rtype: str
         """
-        return json.loads(data)
+        return json.loads(decode(data))
