@@ -2,7 +2,6 @@
 
 import threading
 import types
-from functools import wraps
 from .contracts.factory import Factory
 from .contracts.store import Store
 
@@ -276,10 +275,7 @@ class CacheManager(Factory, threading.local):
         self._serializers[name] = serializer
 
     def __getattr__(self, item):
-        try:
-            return object.__getattribute__(self, item)
-        except AttributeError:
-            return getattr(self.store(), item)
+        return getattr(self.store(), item)
 
     def __call__(self, store=None, *args, **kwargs):
         if isinstance(store, (types.FunctionType, types.MethodType)):
