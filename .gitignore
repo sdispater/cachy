@@ -24,3 +24,4 @@ config.py
 
 Makefile
 .python-version
+pyproject.lock

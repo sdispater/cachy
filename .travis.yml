@@ -1,13 +1,22 @@
 language: python
+
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
+
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/pypoetry
+
 install:
-  #- pip install -r requirements.txt
-  - pip install -r tests-requirements.txt
-script: py.test
+  - curl -fsS -o get-poetry.py https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+  - python get-poetry.py --preview
+  - poetry install --extras memcached
+
+script: poetry run pytest tests/
 
 services:
   - memcached

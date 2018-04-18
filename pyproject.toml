@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "cachy"
+version = "0.1.1"
+description = "Cachy provides a simple yet effective caching library."
+
+license = "MIT"
+
+authors = [
+    "Sébastien Eustace <sebastien@eustace.io>"
+]
+
+readme = 'README.rst'
+
+homepage = "https://github.com/sdispater/cachy"
+repository = "https://github.com/sdispater/cachy"
+
+keywords = ['cache']
+
+
+[tool.poetry.dependencies]
+python = "~2.7 || ^3.4"
+redis = { version = "^2.10", optional = true }
+python-memcached = { version = "^1.59", optional = true }
+
+[tool.poetry.extras]
+redis = ["redis"]
+memcached = ["python-memcached"]
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.5"
+pytest-mock = "^1.9"
+flexmock = "^0.10.2"
+fakeredis = "^0.10.2"

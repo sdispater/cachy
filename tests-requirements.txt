@@ -1,5 +1,0 @@
-pytest
-pytest-mock
-flexmock
-fakeredis
-python-memcached

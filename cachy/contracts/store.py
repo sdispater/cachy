@@ -8,8 +8,6 @@ class Store(object):
     Abstract class representing a cache store.
     """
 
-    driver = None
-
     _serializer = PickleSerializer()
 
     def get(self, key):
