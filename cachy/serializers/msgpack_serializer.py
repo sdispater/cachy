@@ -24,7 +24,7 @@ class MsgPackSerializer(Serializer):
 
         :rtype: str
         """
-        return msgpack.packb(data)
+        return msgpack.packb(data, use_bin_types=True)
 
     def unserialize(self, data):
         """
@@ -35,4 +35,4 @@ class MsgPackSerializer(Serializer):
 
         :rtype: str
         """
-        return msgpack.unpackb(data)
+        return msgpack.unpackb(data, encoding='utf-8')
