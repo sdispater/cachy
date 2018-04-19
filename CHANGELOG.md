@@ -1,4 +1,4 @@
-## 0.2.0
+## 0.2.0 - 2018-04-19
 
 ### Added
 
@@ -9,8 +9,6 @@
 - Changed hashes for the file store (using sha256 by default instead of md5).
 
 
-## 0.1
-
-(November 6th, 2015)
+## 0.1 - 2015-11-06
 
 - Initial release
