@@ -145,7 +145,14 @@ class CacheManager(Factory, threading.local):
 
         :rtype: Repository
         """
-        return self.repository(FileStore(config['path']))
+        kwargs = {
+            'directory': config['path']
+        }
+
+        if 'hash_type' in config:
+            kwargs['hash_type'] = config['hash_type']
+
+        return self.repository(FileStore(**kwargs))
 
     def _create_redis_driver(self, config):
         """

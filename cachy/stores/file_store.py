@@ -13,12 +13,23 @@ class FileStore(Store):
     A cache store using the filesystem as its backend.
     """
 
-    def __init__(self, directory):
+    _HASHES = {
+        'md5': (hashlib.md5, 2),
+        'sha1': (hashlib.sha1, 4),
+        'sha256': (hashlib.sha256, 8)
+    }
+
+    def __init__(self, directory, hash_type='sha256'):
         """
         :param directory: The cache directory
         :type directory: str
         """
         self._directory = directory
+
+        if hash_type not in self._HASHES:
+            raise ValueError('hash_type "{}" is not valid.'.format(hash_type))
+
+        self._hash_type = hash_type
 
     def get(self, key):
         """
@@ -185,11 +196,12 @@ class FileStore(Store):
 
         :rtype: str
         """
-        hash = hashlib.md5(encode(key)).hexdigest()
+        hash_type, parts_count = self._HASHES[self._hash_type]
+        h = hash_type(encode(key)).hexdigest()
 
-        parts = [hash[i:i+2] for i in range(0, len(hash), 2)][:2]
+        parts = [h[i:i+2] for i in range(0, len(h), 2)][:parts_count]
 
-        return os.path.join(self._directory, os.path.sep.join(parts), hash)
+        return os.path.join(self._directory, os.path.sep.join(parts), h)
 
     def _expiration(self, minutes):
         """
@@ -211,4 +223,5 @@ class FileStore(Store):
 
         :rtype: str
         """
+        return ''
         return ''

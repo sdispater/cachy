@@ -137,3 +137,15 @@ class DictStoreTestCase(TestCase):
         result = store.get('foo')
         assert result == {'foo': 'bar'}
 
+    def test_set_hash_type(self):
+        store = FileStore(self._dir, hash_type='sha256')
+
+        store.put('foo', 'bar', 10)
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+
+        assert os.path.exists(full_dir)
