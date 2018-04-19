@@ -24,7 +24,7 @@ class MsgPackSerializer(Serializer):
 
         :rtype: str
         """
-        return msgpack.packb(data, use_bin_types=True)
+        return msgpack.packb(data, use_bin_type=True)
 
     def unserialize(self, data):
         """
