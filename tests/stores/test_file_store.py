@@ -41,9 +41,13 @@ class DictStoreTestCase(TestCase):
 
     def test_put_creates_missing_directories(self):
         store = flexmock(FileStore(self._dir))
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
         store.should_receive('_create_cache_directory').once().with_args(full_path)
         mock = flexmock(builtins)
         handler = flexmock()
@@ -61,9 +65,13 @@ class DictStoreTestCase(TestCase):
         mock = flexmock(builtins)
         handler = flexmock()
 
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
 
         mock.should_receive('open').once().with_args(full_path, 'rb').and_return(handler)
         handler.should_receive('read').once().and_return(contents)
@@ -77,9 +85,13 @@ class DictStoreTestCase(TestCase):
 
         contents = b'1111111111' + store.serialize('bar')
 
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
 
         store.should_receive('_expiration').with_args(10).and_return(1111111111)
 
@@ -95,9 +107,13 @@ class DictStoreTestCase(TestCase):
 
         contents = b'9999999999' + store.serialize('bar')
 
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
 
         mock = flexmock(builtins)
         handler = flexmock()
@@ -108,9 +124,14 @@ class DictStoreTestCase(TestCase):
 
     def test_forget_with_missing_file(self):
         store = FileStore(self._dir)
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
 
         mock = flexmock(os.path)
         mock.should_receive('exists').once().with_args(full_path).and_return(False)
@@ -119,9 +140,14 @@ class DictStoreTestCase(TestCase):
 
     def test_forget_removes_file(self):
         store = FileStore(self._dir)
-        md5 = hashlib.md5(encode('foo')).hexdigest()
-        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
-        full_path = os.path.join(full_dir, md5)
+
+        sha = hashlib.sha256(encode('foo')).hexdigest()
+        full_dir = os.path.join(
+            self._dir,
+            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
+            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
+        )
+        full_path = os.path.join(full_dir, sha)
 
         mock = flexmock(os.path)
         mock.should_receive('exists').once().with_args(full_path).and_return(True)
@@ -138,14 +164,11 @@ class DictStoreTestCase(TestCase):
         assert result == {'foo': 'bar'}
 
     def test_set_hash_type(self):
-        store = FileStore(self._dir, hash_type='sha256')
+        store = FileStore(self._dir, hash_type='md5')
 
         store.put('foo', 'bar', 10)
-        sha = hashlib.sha256(encode('foo')).hexdigest()
-        full_dir = os.path.join(
-            self._dir,
-            sha[0:2], sha[2:4], sha[4:6], sha[6:8],
-            sha[8:10], sha[10:12], sha[12:14], sha[14:16]
-        )
+        md5 = hashlib.md5(encode('foo')).hexdigest()
+
+        full_dir = os.path.join(self._dir, md5[0:2], md5[2:4])
 
         assert os.path.exists(full_dir)
