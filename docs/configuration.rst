@@ -100,7 +100,7 @@ You will need the `redis <https://pypi.python.org/pypi/redis>`_ library in order
 
     {
         'redis': {
-            'driver': 'memcached',
+            'driver': 'redis',
             'host': 'localhost',
             'port': 6379,
             'db': 0
