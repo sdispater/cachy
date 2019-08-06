@@ -15,6 +15,7 @@ cache:
 install:
   - curl -fsS -o get-poetry.py https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
   - python get-poetry.py --preview -y
+  - source $HOME/.poetry/env
   - poetry install --extras memcached
 
 script: poetry run pytest tests/
