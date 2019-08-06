@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import math
+
+import redis
 from unittest import TestCase
 from flexmock import flexmock, flexmock_teardown
+from fakeredis import FakeServer
 from fakeredis import FakeStrictRedis
 from cachy.stores import RedisStore
 
@@ -10,7 +13,12 @@ from cachy.stores import RedisStore
 class RedisStoreTestCase(TestCase):
 
     def setUp(self):
-        self.redis = FakeStrictRedis()
+        server = FakeServer()
+        server.connected = True
+        self.store = RedisStore(
+            prefix='prefix:', redis_class=FakeStrictRedis, server=server
+        )
+        self.redis = FakeStrictRedis(server=server)
 
         super(RedisStoreTestCase, self).setUp()
 
@@ -19,65 +27,51 @@ class RedisStoreTestCase(TestCase):
         self.redis.flushdb()
 
     def test_get_returns_null_when_not_found(self):
-        store = self.get_store()
-
-        self.assertIsNone(store.get('foo'))
+        self.assertIsNone(self.store.get('foo'))
 
     def test_redis_value_is_returned(self):
-        store = self.get_store()
-        self.redis.set('prefix:foo', store.serialize('bar'))
+        self.redis.set('prefix:foo', self.store.serialize('bar'))
 
-        self.assertEqual('bar', store.get('foo'))
+        self.assertEqual('bar', self.store.get('foo'))
 
     def test_redis_value_is_returned_for_numerics(self):
-        store = self.get_store()
-        self.redis.set('prefix:foo', store.serialize(1))
+        self.redis.set('prefix:foo', self.store.serialize(1))
 
-        self.assertEqual(1, store.get('foo'))
+        self.assertEqual(1, self.store.get('foo'))
 
     def test_put_value_into_redis(self):
-        store = self.get_store()
-        store.put('foo', 'bar', 60)
+        self.store.put('foo', 'bar', 60)
 
-        self.assertEqual(store.serialize('bar'), self.redis.get('prefix:foo'))
+        self.assertEqual(self.store.serialize('bar'), self.redis.get('prefix:foo'))
         self.assertEqual(60., round(math.ceil(float(self.redis.ttl('prefix:foo')) / 60)))
 
     def test_put_numeric_value_into_redis(self):
-        store = self.get_store()
-        store.put('foo', 1, 60)
+        self.store.put('foo', 1, 60)
 
-        self.assertEqual(store.serialize(1), self.redis.get('prefix:foo'))
+        self.assertEqual(self.store.serialize(1), self.redis.get('prefix:foo'))
         self.assertEqual(60., round(math.ceil(float(self.redis.ttl('prefix:foo')) / 60)))
 
     def test_increment(self):
-        store = self.get_store()
         self.redis.set('prefix:foo', 1)
 
-        store.increment('foo', 2)
+        self.store.increment('foo', 2)
         self.assertEqual(3, int(self.redis.get('prefix:foo')))
 
     def test_decrement(self):
-        store = self.get_store()
         self.redis.set('prefix:foo', 3)
 
-        store.decrement('foo', 2)
+        self.store.decrement('foo', 2)
         self.assertEqual(1, int(self.redis.get('prefix:foo')))
 
     def test_forever(self):
-        store = self.get_store()
+        self.store.forever('foo', 'bar')
 
-        store.forever('foo', 'bar')
-
-        self.assertEqual(store.serialize('bar'), self.redis.get('prefix:foo'))
+        self.assertEqual(self.store.serialize('bar'), self.redis.get('prefix:foo'))
         assert self.redis.ttl('prefix:foo') == -1
 
     def test_forget(self):
-        store = self.get_store()
         self.redis.set('prefix:foo', 'bar')
 
-        store.forget('foo')
+        self.store.forget('foo')
 
         self.assertFalse(self.redis.exists('prefix:foo'))
-
-    def get_store(self):
-        return RedisStore(prefix='prefix:', redis_class=FakeStrictRedis)

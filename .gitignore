@@ -24,4 +24,4 @@ config.py
 
 Makefile
 .python-version
-pyproject.lock
+poetry.lock

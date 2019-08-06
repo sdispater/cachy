@@ -2,24 +2,23 @@
 name = "cachy"
 version = "0.2.0"
 description = "Cachy provides a simple yet effective caching library."
-
 license = "MIT"
-
 authors = [
     "Sébastien Eustace <sebastien@eustace.io>"
 ]
-
 readme = 'README.rst'
-
 homepage = "https://github.com/sdispater/cachy"
 repository = "https://github.com/sdispater/cachy"
-
 keywords = ['cache']
 
+packages = [
+    {include = "cachy"},
+    {include = "tests", format = "sdist"},
+]
 
 [tool.poetry.dependencies]
 python = "~2.7 || ^3.4"
-redis = { version = "^2.10", optional = true }
+redis = { version = "^3.3.6", optional = true }
 python-memcached = { version = "^1.59", optional = true }
 msgpack-python = { version = "^0.5", optional = true }
 
@@ -29,7 +28,7 @@ memcached = ["python-memcached"]
 msgpack = ["msgpack-python"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^3.5"
-pytest-mock = "^1.9"
-flexmock = "^0.10.2"
-fakeredis = "^0.10.2"
+pytest = "^4.6"
+pytest-mock = "^1.10.4"
+flexmock = "^0.10.4"
+fakeredis = {git = "https://github.com/jamesls/fakeredis.git"}

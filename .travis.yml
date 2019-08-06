@@ -5,6 +5,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 
 cache:
   pip: true
@@ -13,7 +14,7 @@ cache:
 
 install:
   - curl -fsS -o get-poetry.py https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
-  - python get-poetry.py --preview
+  - python get-poetry.py --preview -y
   - poetry install --extras memcached
 
 script: poetry run pytest tests/
