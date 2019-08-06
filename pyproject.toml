@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cachy"
-version = "0.2.0"
+version = "0.3.0"
 description = "Cachy provides a simple yet effective caching library."
 license = "MIT"
 authors = [
