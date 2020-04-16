@@ -224,4 +224,3 @@ class FileStore(Store):
         :rtype: str
         """
         return ''
-        return ''
