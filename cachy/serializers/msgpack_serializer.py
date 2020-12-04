@@ -10,7 +10,7 @@ from .serializer import Serializer
 
 class MsgPackSerializer(Serializer):
     """
-    Serializer that uses `msgpack <https://pypi.python.org/pypi/msgpack-python/>`_ representations.
+    Serializer that uses `msgpack <https://pypi.python.org/pypi/msgpack/>`_ representations.
 
     By default, this serializer does not support serializing custom objects.
     """
