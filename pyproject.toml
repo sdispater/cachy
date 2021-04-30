@@ -11,10 +11,8 @@ homepage = "https://github.com/sdispater/cachy"
 repository = "https://github.com/sdispater/cachy"
 keywords = ['cache']
 
-packages = [
-    {include = "cachy"},
-    {include = "tests", format = "sdist"},
-]
+packages = [{include = "cachy"}]
+include = [{ path = "tests", format = "sdist" }]
 
 [tool.poetry.dependencies]
 python = "~2.7 || ^3.4"
