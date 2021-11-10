@@ -2,16 +2,13 @@
 
 import datetime
 from unittest import TestCase
-from flexmock import flexmock, flexmock_teardown
+from flexmock import flexmock
 
 from cachy import Repository
 from cachy.contracts.store import Store
 
 
 class RepositoryTestCase(TestCase):
-
-    def tearDown(self):
-        flexmock_teardown()
 
     def test_get_returns_value_from_cache(self):
         repo = self._get_repository()
