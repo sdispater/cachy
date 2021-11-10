@@ -7,7 +7,7 @@ import hashlib
 import shutil
 
 from unittest import TestCase
-from flexmock import flexmock, flexmock_teardown
+from flexmock import flexmock
 
 from cachy.serializers import JsonSerializer
 from cachy.stores import FileStore
@@ -28,8 +28,6 @@ class DictStoreTestCase(TestCase):
         for e in glob.glob(os.path.join(self._dir, '*')):
             if os.path.isdir(e):
                 shutil.rmtree(e)
-
-        flexmock_teardown()
 
     def test_none_is_returned_if_file_doesnt_exist(self):
         mock = flexmock(os.path)

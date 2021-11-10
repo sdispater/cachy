@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from flexmock import flexmock, flexmock_teardown
+from flexmock import flexmock
 
 from cachy.stores import DictStore
 
 
 class DictStoreTestCase(TestCase):
-
-    def tearDown(self):
-        flexmock_teardown()
 
     def test_items_can_be_set_and_retrieved(self):
         store = DictStore()

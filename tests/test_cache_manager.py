@@ -3,7 +3,7 @@
 import os
 import tempfile
 from unittest import TestCase
-from flexmock import flexmock, flexmock_teardown
+from flexmock import flexmock
 
 from cachy import CacheManager, Repository
 from cachy.stores import DictStore, FileStore
@@ -11,9 +11,6 @@ from cachy.contracts.store import Store
 
 
 class RepositoryTestCase(TestCase):
-
-    def tearDown(self):
-        flexmock_teardown()
 
     def test_store_get_the_correct_store(self):
         cache = CacheManager({

@@ -7,13 +7,10 @@ from cachy.stores import DictStore, RedisStore
 from cachy.tag_set import TagSet
 from cachy.redis_tagged_cache import RedisTaggedCache
 from datetime import datetime, timedelta
-from flexmock import flexmock, flexmock_teardown
+from flexmock import flexmock
 
 
 class TaggedCacheTestCase(TestCase):
-
-    def tearDown(self):
-        flexmock_teardown()
 
     def test_tags_can_be_flushed(self):
         store = DictStore()

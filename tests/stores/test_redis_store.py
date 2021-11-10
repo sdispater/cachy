@@ -4,7 +4,6 @@ import math
 
 import redis
 from unittest import TestCase
-from flexmock import flexmock, flexmock_teardown
 from fakeredis import FakeServer
 from fakeredis import FakeStrictRedis
 from cachy.stores import RedisStore
@@ -23,7 +22,6 @@ class RedisStoreTestCase(TestCase):
         super(RedisStoreTestCase, self).setUp()
 
     def tearDown(self):
-        flexmock_teardown()
         self.redis.flushdb()
 
     def test_get_returns_null_when_not_found(self):
