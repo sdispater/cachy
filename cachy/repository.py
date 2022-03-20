@@ -276,7 +276,7 @@ class Repository(CacheContract):
         """
         if args:
             serialized_arguments = (
-                self._store.serialize(args[1:])
+                self._store.serialize(args)
                 + self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
             )
         else:
