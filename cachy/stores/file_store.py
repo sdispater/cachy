@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import hashlib
 import math
 import os
@@ -28,7 +26,7 @@ class FileStore(Store):
         self._directory = directory
 
         if hash_type not in self._HASHES:
-            raise ValueError('hash_type "{}" is not valid.'.format(hash_type))
+            raise ValueError(f'hash_type "{hash_type}" is not valid.')
 
         self._hash_type = hash_type
 

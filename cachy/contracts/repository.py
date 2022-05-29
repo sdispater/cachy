@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Repository:
     def has(self, key):
         """

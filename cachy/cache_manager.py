@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import threading
 import types
 
@@ -22,7 +20,7 @@ class CacheManager(Factory, threading.local):
     }
 
     def __init__(self, config):
-        super(CacheManager, self).__init__()
+        super().__init__()
 
         self._config = config
         self._stores = {}

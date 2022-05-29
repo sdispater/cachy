@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Orator documentation build configuration file, created by
 # sphinx-quickstart on Thu Mar 12 23:07:35 2015.

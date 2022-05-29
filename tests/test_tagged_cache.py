@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import hashlib
 from datetime import datetime, timedelta
 from unittest import TestCase

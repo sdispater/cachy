@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import hashlib
 
 from .tagged_cache import TaggedCache
@@ -33,7 +31,7 @@ class RedisTaggedCache(TaggedCache):
         """
         self._delete_forever_keys()
 
-        super(RedisTaggedCache, self).flush()
+        super().flush()
 
     def _push_forever_keys(self, namespace, key):
         """
@@ -42,7 +40,7 @@ class RedisTaggedCache(TaggedCache):
         :type namespace: str
         :type key: str
         """
-        full_key = "%s%s:%s" % (
+        full_key = "{}{}:{}".format(
             self.get_prefix(),
             hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(),
             key,
@@ -80,4 +78,4 @@ class RedisTaggedCache(TaggedCache):
 
         :rtype: str
         """
-        return "%s%s:forever" % (self.get_prefix(), segment)
+        return f"{self.get_prefix()}{segment}:forever"

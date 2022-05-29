@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import math
 from unittest import TestCase
 
@@ -18,7 +16,7 @@ class RedisStoreTestCase(TestCase):
         )
         self.redis = FakeStrictRedis(server=server)
 
-        super(RedisStoreTestCase, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         flexmock_teardown()

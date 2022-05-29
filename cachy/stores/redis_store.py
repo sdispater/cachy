@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 try:
     from redis import StrictRedis
 except ImportError:

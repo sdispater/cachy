@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import hashlib
 import math
@@ -294,7 +292,7 @@ class Repository(CacheContract):
                 )
             )
         elif isinstance(fn, types.FunctionType):
-            key = self._hash("%s.%s" % (fn.__name__, serialized_arguments))
+            key = self._hash(f"{fn.__name__}.{serialized_arguments}")
         else:
             key = "%s:" % fn + self._hash(serialized_arguments)
 

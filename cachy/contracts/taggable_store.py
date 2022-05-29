@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from ..tag_set import TagSet
 from ..tagged_cache import TaggedCache
 from .store import Store

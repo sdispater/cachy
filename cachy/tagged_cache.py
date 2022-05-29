@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import hashlib
 import math
@@ -212,7 +210,7 @@ class TaggedCache(Store):
 
         :rtype: str
         """
-        return "%s:%s" % (
+        return "{}:{}".format(
             hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(),
             key,
         )

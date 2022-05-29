@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from unittest import TestCase
 
 from cachy.stores import MemcachedStore
@@ -9,7 +7,7 @@ class RedisStoreTestCase(TestCase):
     def setUp(self):
         self.store = MemcachedStore(["127.0.0.1:11211"], "prefix:")
 
-        super(RedisStoreTestCase, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         self.store._memcache.flush_all()

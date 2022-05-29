@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Factory:
     """
     Represent a cahce factory.
