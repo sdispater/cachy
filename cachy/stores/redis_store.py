@@ -15,14 +15,23 @@ class RedisStore(TaggableStore):
     A cache store using the Redis as its backend.
     """
 
-    def __init__(self, host='localhost', port=6379, db=0, password=None,
-                 prefix='', redis_class=StrictRedis, **kwargs):
+    def __init__(
+        self,
+        host="localhost",
+        port=6379,
+        db=0,
+        password=None,
+        prefix="",
+        redis_class=StrictRedis,
+        **kwargs
+    ):
         # Removing potential "driver" key
-        kwargs.pop('driver', None)
+        kwargs.pop("driver", None)
 
         self._prefix = prefix
-        self._redis = redis_class(host=host, port=port, db=db,
-                                  password=password, **kwargs)
+        self._redis = redis_class(
+            host=host, port=port, db=db, password=password, **kwargs
+        )
 
     def get(self, key):
         """

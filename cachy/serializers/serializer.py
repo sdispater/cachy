@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-class Serializer(object):
+class Serializer:
     """
     Abstract serializer.
     """

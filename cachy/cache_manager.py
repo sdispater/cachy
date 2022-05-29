@@ -2,23 +2,12 @@
 
 import threading
 import types
+
 from .contracts.factory import Factory
 from .contracts.store import Store
-
-from .stores import (
-    DictStore,
-    FileStore,
-    RedisStore,
-    MemcachedStore
-)
-
 from .repository import Repository
-from .serializers import (
-    Serializer,
-    JsonSerializer,
-    MsgPackSerializer,
-    PickleSerializer
-)
+from .serializers import JsonSerializer, MsgPackSerializer, PickleSerializer, Serializer
+from .stores import DictStore, FileStore, MemcachedStore, RedisStore
 
 
 class CacheManager(Factory, threading.local):
@@ -27,9 +16,9 @@ class CacheManager(Factory, threading.local):
     """
 
     _serializers = {
-        'json': JsonSerializer(),
-        'msgpack': MsgPackSerializer(),
-        'pickle': PickleSerializer()
+        "json": JsonSerializer(),
+        "msgpack": MsgPackSerializer(),
+        "pickle": PickleSerializer(),
     }
 
     def __init__(self, config):
@@ -38,7 +27,7 @@ class CacheManager(Factory, threading.local):
         self._config = config
         self._stores = {}
         self._custom_creators = {}
-        self._serializer = self._resolve_serializer(config.get('serializer', 'pickle'))
+        self._serializer = self._resolve_serializer(config.get("serializer", "pickle"))
 
     def store(self, name=None):
         """
@@ -90,15 +79,15 @@ class CacheManager(Factory, threading.local):
         config = self._get_config(name)
 
         if not config:
-            raise RuntimeError('Cache store [%s] is not defined.' % name)
+            raise RuntimeError("Cache store [%s] is not defined." % name)
 
-        if config['driver'] in self._custom_creators:
+        if config["driver"] in self._custom_creators:
             repository = self._call_custom_creator(config)
         else:
-            repository = getattr(self, '_create_%s_driver' % config['driver'])(config)
+            repository = getattr(self, "_create_%s_driver" % config["driver"])(config)
 
-        if 'serializer' in config:
-            serializer = self._resolve_serializer(config['serializer'])
+        if "serializer" in config:
+            serializer = self._resolve_serializer(config["serializer"])
         else:
             serializer = self._serializer
 
@@ -115,13 +104,13 @@ class CacheManager(Factory, threading.local):
 
         :rtype: Repository
         """
-        creator = self._custom_creators[config['driver']](config)
+        creator = self._custom_creators[config["driver"]](config)
 
         if isinstance(creator, Store):
             creator = self.repository(creator)
 
         if not isinstance(creator, Repository):
-            raise RuntimeError('Custom creator should return a Repository instance.')
+            raise RuntimeError("Custom creator should return a Repository instance.")
 
         return creator
 
@@ -145,12 +134,10 @@ class CacheManager(Factory, threading.local):
 
         :rtype: Repository
         """
-        kwargs = {
-            'directory': config['path']
-        }
+        kwargs = {"directory": config["path"]}
 
-        if 'hash_type' in config:
-            kwargs['hash_type'] = config['hash_type']
+        if "hash_type" in config:
+            kwargs["hash_type"] = config["hash_type"]
 
         return self.repository(FileStore(**kwargs))
 
@@ -198,7 +185,7 @@ class CacheManager(Factory, threading.local):
 
         :rtype: str
         """
-        return config.get('prefix', '')
+        return config.get("prefix", "")
 
     def _get_config(self, name):
         """
@@ -209,7 +196,7 @@ class CacheManager(Factory, threading.local):
 
         :rtype: dict
         """
-        return self._config['stores'].get(name)
+        return self._config["stores"].get(name)
 
     def get_default_driver(self):
         """
@@ -219,11 +206,11 @@ class CacheManager(Factory, threading.local):
 
         :raises: RuntimeError
         """
-        if 'default' in self._config:
-            return self._config['default']
+        if "default" in self._config:
+            return self._config["default"]
 
-        if len(self._config['stores']) == 1:
-            return list(self._config['stores'].keys())[0]
+        if len(self._config["stores"]) == 1:
+            return list(self._config["stores"].keys())[0]
 
         raise RuntimeError('Missing "default" cache in configuration.')
 
@@ -234,7 +221,7 @@ class CacheManager(Factory, threading.local):
         :param name: The default cache driver name
         :type name: str
         """
-        self._config['default'] = name
+        self._config["default"] = name
 
     def extend(self, driver, store):
         """
@@ -267,7 +254,7 @@ class CacheManager(Factory, threading.local):
         if serializer in self._serializers:
             return self._serializers[serializer]
 
-        raise RuntimeError('Unsupported serializer')
+        raise RuntimeError("Unsupported serializer")
 
     def register_serializer(self, name, serializer):
         """

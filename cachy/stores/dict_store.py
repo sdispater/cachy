@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import time
 import math
+import time
+
 from ..contracts.taggable_store import TaggableStore
 
 
@@ -53,7 +54,7 @@ class DictStore(TaggableStore):
         # Next, we'll extract the number of minutes that are remaining for a cache
         # so that we can properly retain the time for things like the increment
         # operation that may be performed on the cache. We'll round this out.
-        time_ = math.ceil((expire - round(time.time())) / 60.)
+        time_ = math.ceil((expire - round(time.time())) / 60.0)
 
         return (data, time_)
 
@@ -160,4 +161,4 @@ class DictStore(TaggableStore):
 
         :rtype: str
         """
-        return ''
+        return ""

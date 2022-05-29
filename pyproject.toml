@@ -32,3 +32,6 @@ pytest = "^7.1.2"
 pytest-mock = "^1.10.4"
 flexmock = "^0.10.4"
 fakeredis = "^1.8"
+
+[tool.isort]
+profile = "black"

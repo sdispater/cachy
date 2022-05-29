@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .serializer import Serializer
-from .json_serializer import JsonSerializer
-from .msgpack_serializer import MsgPackSerializer
-from .pickle_serializer import PickleSerializer
+from .json_serializer import JsonSerializer  # noqa: F401
+from .msgpack_serializer import MsgPackSerializer  # noqa: F401
+from .pickle_serializer import PickleSerializer  # noqa: F401
+from .serializer import Serializer  # noqa: F401
