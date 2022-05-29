@@ -38,3 +38,15 @@ jobs:
 
       - name: Run pytest
         run: poetry run python -m pytest -p no:sugar -q tests/
+
+  pre-commit:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+
+      - name: Lint using Pre-Commit 
+        uses: pre-commit/action@v2.0.0
