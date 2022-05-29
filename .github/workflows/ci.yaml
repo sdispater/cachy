@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: |
+          curl -sL https://install.python-poetry.org | python -
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        run: poetry install --extras memcached
+
+      - name: Install pytest plugin
+        run: poetry run pip install pytest-github-actions-annotate-failures
+
+      - name: Start memcached service
+        uses: niden/actions-memcached@v7
+
+      - name: Run pytest
+        run: poetry run python -m pytest -p no:sugar -q tests/
+
+  pre-commit:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+
+      - name: Lint using Pre-Commit 
+        uses: pre-commit/action@v2.0.0

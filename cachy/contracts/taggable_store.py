@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
-from .store import Store
-from ..tagged_cache import TaggedCache
 from ..tag_set import TagSet
+from ..tagged_cache import TaggedCache
+from .store import Store
 
 
 class TaggableStore(Store):
-
     def tags(self, *names):
         """
         Begin executing a new tags operation.

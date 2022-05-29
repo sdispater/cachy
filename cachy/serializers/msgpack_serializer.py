@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 try:
     import msgpack
 except ImportError:
@@ -35,4 +33,4 @@ class MsgPackSerializer(Serializer):
 
         :rtype: str
         """
-        return msgpack.unpackb(data, encoding='utf-8')
+        return msgpack.unpackb(data, encoding="utf-8")

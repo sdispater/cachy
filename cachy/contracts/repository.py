@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-
-
-class Repository(object):
-
+class Repository:
     def has(self, key):
         """
         Determine if an item exists in the cache.

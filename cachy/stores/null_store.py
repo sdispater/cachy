@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from ..contracts.store import Store
 
 
@@ -98,4 +96,4 @@ class NullStore(Store):
 
         :rtype: str
         """
-        return ''
+        return ""

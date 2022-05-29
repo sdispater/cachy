@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import uuid
 
 
-class TagSet(object):
-
+class TagSet:
     def __init__(self, store, names=None):
         """
         :param store: The cache store implementation
@@ -47,7 +44,7 @@ class TagSet(object):
 
         :rtype: str
         """
-        return '|'.join(self._tag_ids())
+        return "|".join(self._tag_ids())
 
     def reset_tag(self, name):
         """
@@ -58,7 +55,7 @@ class TagSet(object):
 
         :rtype: str
         """
-        id_ = str(uuid.uuid4()).replace('-', '')
+        id_ = str(uuid.uuid4()).replace("-", "")
 
         self._store.forever(self.tag_key(name), id_)
 
@@ -73,4 +70,4 @@ class TagSet(object):
 
         :rtype: str
         """
-        return 'tag:%s:key' % name
+        return "tag:%s:key" % name
