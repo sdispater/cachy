@@ -12,10 +12,9 @@ from ..contracts.taggable_store import TaggableStore
 
 
 class MemcachedStore(TaggableStore):
-
-    def __init__(self, servers, prefix='', **kwargs):
+    def __init__(self, servers, prefix="", **kwargs):
         # Removing potential "driver" key
-        kwargs.pop('driver', None)
+        kwargs.pop("driver", None)
 
         self._prefix = prefix
         self._memcache = memcache.Client(servers, **kwargs)

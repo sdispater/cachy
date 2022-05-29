@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import math
 import datetime
-import types
 import hashlib
+import math
+import types
 from functools import wraps
+
 from .contracts.repository import Repository as CacheContract
 from .helpers import value
-from .utils import encode, decode
+from .utils import encode
 
 
 class Repository(CacheContract):
@@ -102,7 +103,7 @@ class Repository(CacheContract):
 
         :rtype: bool
         """
-        if hasattr(self._store, 'add'):
+        if hasattr(self._store, "add"):
             return self._store.add(key, val, self._get_minutes(minutes))
 
         if not self.has(key):
@@ -275,24 +276,27 @@ class Repository(CacheContract):
         :rtype: str
         """
         if args:
-            serialized_arguments = (
-                self._store.serialize(args[1:])
-                + self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
-            )
+            serialized_arguments = self._store.serialize(
+                args[1:]
+            ) + self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
         else:
-            serialized_arguments = self._store.serialize([(k, kwargs[k]) for k in sorted(kwargs.keys())])
+            serialized_arguments = self._store.serialize(
+                [(k, kwargs[k]) for k in sorted(kwargs.keys())]
+            )
 
         if isinstance(fn, types.MethodType):
-            key = self._hash('%s.%s.%s'
-                             % (fn.__self__.__class__.__name__,
-                                args[0].__name__,
-                                serialized_arguments))
+            key = self._hash(
+                "%s.%s.%s"
+                % (
+                    fn.__self__.__class__.__name__,
+                    args[0].__name__,
+                    serialized_arguments,
+                )
+            )
         elif isinstance(fn, types.FunctionType):
-            key = self._hash('%s.%s'
-                             % (fn.__name__,
-                                serialized_arguments))
+            key = self._hash("%s.%s" % (fn.__name__, serialized_arguments))
         else:
-            key = '%s:' % fn + self._hash(serialized_arguments)
+            key = "%s:" % fn + self._hash(serialized_arguments)
 
         return key
 
@@ -309,15 +313,13 @@ class Repository(CacheContract):
             @wraps(fn)
             def wrapper(*a, **kw):
                 return self.remember(
-                    self._get_key(fn, a, kw),
-                    self._default,
-                    lambda: fn(*a, **kw)
+                    self._get_key(fn, a, kw), self._default, lambda: fn(*a, **kw)
                 )
 
             return wrapper
         else:
-            k = kwargs.get('key')
-            minutes = kwargs.get('minutes', self._default)
+            k = kwargs.get("key")
+            minutes = kwargs.get("minutes", self._default)
 
             def decorated(fn):
                 key = k
@@ -325,9 +327,7 @@ class Repository(CacheContract):
                 @wraps(fn)
                 def wrapper(*a, **kw):
                     return self.remember(
-                        self._get_key(key or fn, a, kw),
-                        minutes,
-                        lambda: fn(*a, **kw)
+                        self._get_key(key or fn, a, kw), minutes, lambda: fn(*a, **kw)
                     )
 
                 return wrapper

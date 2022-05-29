@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import hashlib
+import math
 import os
 import time
-import math
-import hashlib
+
 from ..contracts.store import Store
-from ..utils import mkdir_p, encode
+from ..utils import encode, mkdir_p
 
 
 class FileStore(Store):
@@ -14,12 +15,12 @@ class FileStore(Store):
     """
 
     _HASHES = {
-        'md5': (hashlib.md5, 2),
-        'sha1': (hashlib.sha1, 4),
-        'sha256': (hashlib.sha256, 8)
+        "md5": (hashlib.md5, 2),
+        "sha1": (hashlib.sha1, 4),
+        "sha256": (hashlib.sha256, 8),
     }
 
-    def __init__(self, directory, hash_type='sha256'):
+    def __init__(self, directory, hash_type="sha256"):
         """
         :param directory: The cache directory
         :type directory: str
@@ -40,7 +41,7 @@ class FileStore(Store):
 
         :return: The cache value
         """
-        return self._get_payload(key).get('data')
+        return self._get_payload(key).get("data")
 
     def _get_payload(self, key):
         """
@@ -57,9 +58,9 @@ class FileStore(Store):
         # just return null. Otherwise, we'll get the contents of the file and get
         # the expiration UNIX timestamps from the start of the file's contents.
         if not os.path.exists(path):
-            return {'data': None, 'time': None}
+            return {"data": None, "time": None}
 
-        with open(path, 'rb') as fh:
+        with open(path, "rb") as fh:
             contents = fh.read()
 
         expire = int(contents[:10])
@@ -70,16 +71,16 @@ class FileStore(Store):
         if round(time.time()) >= expire:
             self.forget(key)
 
-            return {'data': None, 'time': None}
+            return {"data": None, "time": None}
 
         data = self.unserialize(contents[10:])
 
         # Next, we'll extract the number of minutes that are remaining for a cache
         # so that we can properly retain the time for things like the increment
         # operation that may be performed on the cache. We'll round this out.
-        time_ = math.ceil((expire - round(time.time())) / 60.)
+        time_ = math.ceil((expire - round(time.time())) / 60.0)
 
-        return {'data': data, 'time': time_}
+        return {"data": data, "time": time_}
 
     def put(self, key, value, minutes):
         """
@@ -99,7 +100,7 @@ class FileStore(Store):
         path = self._path(key)
         self._create_cache_directory(path)
 
-        with open(path, 'wb') as fh:
+        with open(path, "wb") as fh:
             fh.write(value)
 
     def _create_cache_directory(self, path):
@@ -125,9 +126,9 @@ class FileStore(Store):
         """
         raw = self._get_payload(key)
 
-        integer = int(raw['data']) + value
+        integer = int(raw["data"]) + value
 
-        self.put(key, integer, int(raw['time']))
+        self.put(key, integer, int(raw["time"]))
 
         return integer
 
@@ -199,7 +200,7 @@ class FileStore(Store):
         hash_type, parts_count = self._HASHES[self._hash_type]
         h = hash_type(encode(key)).hexdigest()
 
-        parts = [h[i:i+2] for i in range(0, len(h), 2)][:parts_count]
+        parts = [h[i : i + 2] for i in range(0, len(h), 2)][:parts_count]
 
         return os.path.join(self._directory, os.path.sep.join(parts), h)
 
@@ -223,5 +224,5 @@ class FileStore(Store):
 
         :rtype: str
         """
-        return ''
-        return ''
+        return ""
+        return ""

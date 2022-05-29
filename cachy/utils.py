@@ -1,55 +1,36 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
 import errno
-
-PY2 = sys.version_info[0] == 2
-PY3K = sys.version_info[0] >= 3
-PY33 = sys.version_info >= (3, 3)
-
-if PY2:
-    import imp
-
-    long = long
-    unicode = unicode
-    basestring = basestring
-else:
-    long = int
-    unicode = str
-    basestring = str
+import os
+from contextlib import suppress
 
 
 def decode(string, encodings=None):
-    if not PY2 and not isinstance(string, bytes):
+    if isinstance(string, bytes):
         return string
 
     if encodings is None:
-        encodings = ['utf-8', 'latin1', 'ascii']
+        encodings = ["utf-8", "latin1", "ascii"]
 
     for encoding in encodings:
-        try:
+        with suppress(UnicodeDecodeError):
             return string.decode(encoding)
-        except UnicodeDecodeError:
-            pass
 
-    return string.decode(encodings[0], errors='ignore')
+    return string.decode(encodings[0], errors="ignore")
 
 
 def encode(string, encodings=None):
-    if isinstance(string, bytes) or PY2 and isinstance(string, unicode):
+    if isinstance(string, bytes):
         return string
 
     if encodings is None:
-        encodings = ['utf-8', 'latin1', 'ascii']
+        encodings = ["utf-8", "latin1", "ascii"]
 
     for encoding in encodings:
-        try:
+        with suppress(UnicodeEncodeError):
             return string.encode(encoding)
-        except UnicodeDecodeError:
-            pass
 
-    return string.encode(encodings[0], errors='ignore')
+    return string.encode(encodings[0], errors="ignore")
 
 
 def mkdir_p(path, mode=0o777):

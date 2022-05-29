@@ -3,7 +3,7 @@
 from ..serializers import PickleSerializer
 
 
-class Store(object):
+class Store:
     """
     Abstract class representing a cache store.
     """

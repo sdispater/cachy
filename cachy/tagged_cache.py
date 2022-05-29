@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import hashlib
 import datetime
+import hashlib
 import math
+
 from .contracts.store import Store
 from .helpers import value
 from .utils import encode
 
 
 class TaggedCache(Store):
-    """
+    """ """
 
-    """
     def __init__(self, store, tags):
         """
         :param store: The cache store implementation
@@ -212,7 +212,10 @@ class TaggedCache(Store):
 
         :rtype: str
         """
-        return '%s:%s' % (hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(), key)
+        return "%s:%s" % (
+            hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(),
+            key,
+        )
 
     def get_prefix(self):
         """

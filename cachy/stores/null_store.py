@@ -98,4 +98,4 @@ class NullStore(Store):
 
         :rtype: str
         """
-        return ''
+        return ""

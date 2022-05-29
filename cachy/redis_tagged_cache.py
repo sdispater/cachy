@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import hashlib
+
 from .tagged_cache import TaggedCache
 from .utils import encode
 
 
 class RedisTaggedCache(TaggedCache):
-
     def forever(self, key, value):
         """
         Store an item in the cache indefinitely.
@@ -22,8 +22,9 @@ class RedisTaggedCache(TaggedCache):
         self._push_forever_keys(namespace, key)
 
         self._store.forever(
-            '%s:%s' % (hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(), key),
-            value
+            "%s:%s"
+            % (hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(), key),
+            value,
         )
 
     def flush(self):
@@ -41,18 +42,20 @@ class RedisTaggedCache(TaggedCache):
         :type namespace: str
         :type key: str
         """
-        full_key = '%s%s:%s' % (self.get_prefix(),
-                                hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(),
-                                key)
+        full_key = "%s%s:%s" % (
+            self.get_prefix(),
+            hashlib.sha1(encode(self._tags.get_namespace())).hexdigest(),
+            key,
+        )
 
-        for segment in namespace.split('|'):
+        for segment in namespace.split("|"):
             self._store.connection().lpush(self._forever_key(segment), full_key)
 
     def _delete_forever_keys(self):
         """
         Delete all of the items that were stored forever.
         """
-        for segment in self._tags.get_namespace().split('|'):
+        for segment in self._tags.get_namespace().split("|"):
             segment = self._forever_key(segment)
             self._delete_forever_values(segment)
 
@@ -77,4 +80,4 @@ class RedisTaggedCache(TaggedCache):
 
         :rtype: str
         """
-        return '%s%s:forever' % (self.get_prefix(), segment)
+        return "%s%s:forever" % (self.get_prefix(), segment)
