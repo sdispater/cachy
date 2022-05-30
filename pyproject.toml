@@ -17,7 +17,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "~2.7 || ^3.4"
+python = "^3.7"
 redis = { version = "^3.3.6", optional = true }
 python-memcached = { version = "^1.59", optional = true }
 msgpack-python = { version = "^0.5", optional = true }
@@ -28,7 +28,7 @@ memcached = ["python-memcached"]
 msgpack = ["msgpack-python"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^4.6"
+pytest = "^7.1.2"
 pytest-mock = "^1.10.4"
 flexmock = "^0.10.4"
-fakeredis = {git = "https://github.com/jamesls/fakeredis.git"}
+fakeredis = "^1.8"
